@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>邮件管理</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <link rel="stylesheet" href="./public/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./public/css/font-awesome.min.css">
+  <link rel="stylesheet" href="./public/plugins/bootstrap-table/bootstrap-table.min.css">
+  <link rel="stylesheet" href="./public/plugins/ztree/css/metroStyle/metroStyle.css">
+  <link rel="stylesheet" href="./public/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.css">
+  <link rel="stylesheet" href="./public/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
+  <link rel="stylesheet" href="./public/css/main.css">
+</head>
+<body>
+<div id="dtapp" v-cloak>
+
+  <div  v-show="showList">
+    <div id="toolbar">
+      <button  class="btn btn-success " type="button" @click="add">
+        <i class="fa fa-plus"></i>&nbsp;&nbsp;<span class="bold">新增</span>
+      </button>
+      <button   class="btn btn-success " type="button" @click="update">
+        <i class="fa fa-pencil-square-o"></i>&nbsp;&nbsp;<span class="bold">修改</span>
+      </button>
+      <button  class="btn btn-danger " type="button" @click="deleteRecord">
+        <i class="fa fa-remove"></i>&nbsp;&nbsp;<span class="bold">删除</span>
+      </button>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        查询条件
+      </div>
+      <div class="panel-body form-group" style="margin-bottom:0px;">
+        <div>
+          <label class="col-xs-1 control-label" style="text-align: left; margin-top:5px">邮件账户：</label>
+          <div class="col-xs-2">
+            <select id="sea_emailAccount" name="emailAccount" class="form-control"
+                    @change="emailAccountSelected">
+              <option value="">请选择</option>
+              <option v-for="item in emailAccountList" :value="item">{{item}}</option>
+            </select>
+          </div>
+          <label class="col-xs-1 control-label" style="text-align: left; margin-top:5px;margin-left: 40px;">是否可用：</label>
+          <div class="col-xs-2">
+            <select id="sea_status" name="status" class="form-control">
+              <option value="">请选择</option>
+              <option value="1">可用</option>
+              <option value="0">不可用</option>
+            </select>
+          </div>
+          <div class="col-xs-2" style="text-align: right; ">
+            <button class="btn btn-primary" @click="search_submit">查询</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+    <table id="mytable"  class="table table-bordered" ></table>
+  </div>
+
+  <div v-show="!showList" class="panel panel-default" >
+    <div class="panel-heading">{{title}}</div>
+    <form class="form-horizontal">
+      <div class="form-group">
+        <div class="col-sm-2 control-label"><span style="color:red;">* </span>邮件账号</div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" v-model.trim="updateEmailInfoRecord.mailAddress" name="mailAddress" id="mailAddress"  placeholder="邮件账号" maxlength="128"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-2 control-label"><span style="color:red;">* </span>是否可用</div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" v-model.trim="updateEmailInfoRecord.status" name="status" id="status" placeholder="是否可用" maxlength="32"/>
+        </div>
+      </div>
+
+      <div  class="form-group">
+        <div class="col-sm-2 control-label">备注信息</div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" v-model.trim="updateEmailInfoRecord.remark" name="remark" id="remark" placeholder="备注信息" maxlength="1024"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-sm-2 control-label"></div>
+        <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+        &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+      </div>
+    </form>
+  </div>
+
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="public/libs/vue.min.js"></script>
+<script src="public/libs/jquery.min.js"></script>
+<script src="public/libs/jquery.slimscroll.min.js"></script>
+
+
+<script src="public/libs/app.js"></script>
+<script src="public/libs/bootstrap.min.js"></script>
+<script src="public/libs/fastclick.min.js"></script>
+
+<script src="./public/plugins/layer/layer.js"></script>
+<script src="./public/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="./public/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="./public/js/common.js"></script>
+<script src="./public/js/email.js"></script>
+<script src="./public/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.js"></script>
+<script src="./public/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>用例执行信息</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <link rel="stylesheet" href="./public/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./public/css/font-awesome.min.css">
+  <link rel="stylesheet" href="./public/plugins/bootstrap-table/bootstrap-table.min.css">
+  <link rel="stylesheet" href="./public/plugins/ztree/css/metroStyle/metroStyle.css">
+
+  <link rel="stylesheet" href="./public/plugins/bootstrap-datetimepicker-my/css/bootstrap-datetimepicker.css">
+  <link rel="stylesheet" href="./public/plugins/bootstrap-datetimepicker-my/css/bootstrap-datetimepicker.min.css">
+  <!--<link rel="stylesheet" href="./public/plugins/My97DatePicker/skin/WdatePicker.css">-->
+
+
+  <link rel="stylesheet" href="./public/css/main.css">
+
+
+  <style type="text/css">
+    /*.table.table-bordered > tr >td {*/
+      /*height: 120px;*/
+      /*max-height: 120px;*/
+    /*}*/
+  </style>
+
+
+</head>
+<body>
+<div id="dtapp" v-cloak>
+
+  <div  v-show="showList">
+    <!--<div>-->
+
+    <div id="toolbar">
+      <button  class="btn btn-danger " type="button" @click="deleteRecord">
+        <i class="fa fa-remove"></i>&nbsp;&nbsp;<span class="bold">删除</span>
+      </button>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        查询条件
+      </div>
+      <div class="panel-body form-group" style="margin-bottom:0px;">
+        <div >
+          <label class="col-xs-1 control-label" style="text-align: left; margin-top:5px">系统标识：</label>
+          <div class="col-xs-2">
+            <!--<input type="text" class="form-control" name="systemFlag" id="sea_systemFlag"/>-->
+            <select id="sea_systemFlag" name="systemFlag" class="form-control"
+                    @change="systemFlagSelected">
+              <option value="">请选择</option>
+              <option v-for="item in sysFlagList" :value="item">{{item}}</option>
+            </select>
+          </div>
+          <label class="col-xs-1 control-label" style="text-align: left; margin-top:5px;margin-left: 110px;">系统环境：</label>
+          <div class="col-xs-2">
+            <!--<input type="text" class="form-control" name="systemEnv" id="sea_systemEnv"/>-->
+            <select id="sea_systemEnv" name="systemEnv" class="form-control"
+                    @change="systemEnvSelected">
+              <option value="">请选择</option>
+              <option v-for="item in sysEnvList" :value="item">{{item}}</option>
+            </select>
+          </div>
+
+
+          <label class="col-xs-1 control-label" style="text-align: left; margin-top:5px;margin-left: 110px;">用户ID：</label>
+          <div class="col-xs-2">
+            <select id="sea_merchId" name="merchId" class="form-control"
+                    @change="merchIdSelected">
+              <option value="">请选择</option>
+              <option v-for="item in merchIdList" :value="item">{{item}}</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div style="margin-top: 50px">
+
+          <label class="col-xs-1 control-label" style="text-align: left; margin-top:5px;">执行结果：</label>
+          <div class="col-xs-2">
+            <select id="sea_isPass" name="isPass" class="form-control">
+              <option value="">请选择</option>
+              <option value="true">true</option>
+              <option value="false">false</option>
+            </select>
+          </div>
+
+
+          <label class="col-xs-1 control-label" style="text-align: left; margin-top:5px; margin-left: 110px;">接 口  ID   ：</label>
+          <div class="col-xs-2">
+            <select id="sea_serviceId" name="serviceId" class="form-control"
+                    @change="serviceIdSelected">
+              <option value="">请选择</option>
+              <option v-for="item in serviceIdList" :value="item">{{item}}</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div style="margin-top: 100px">
+          <label class="col-xs-1 control-label" style="text-align: left; margin-top:5px; ">执行时间：</label>
+          <div class="col-xs-4">
+            <div class="input-group date">
+              <div class="input-group-addon">开始时间</div>
+              <input type="text" class="form-control" name="startDate" id="startDate">
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+
+              <!--<input id="d12" type="text"/>-->
+              <!--<img onClick="WdatePicker({autoPickDate:true,dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endDate\')||\'new Date()\'}',readOnly:true})"-->
+                   <!--src="./public/plugins/My97DatePicker/skin/datePicker.gif" width="26" height="32" align="absmiddle">-->
+            </div>
+          </div>
+
+          <div class="col-xs-4">
+            <div class="input-group date">
+              <div class="input-group-addon">结束时间</div>
+              <input type="text" class="form-control" name="endDate" id="endDate">
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+          </div>
+
+
+
+        </div>
+
+
+        <div class="col-sm-2 pull-right" style="text-align: right; margin-top:15px">
+          <button class="btn btn-primary" @click="search_submit">查询</button>
+        </div>
+      </div>
+    </div>
+
+    <table id="mytable"   ></table>
+  </div>
+
+
+</div>
+
+
+<script src="public/libs/jquery.min.js"></script>
+<script src="public/libs/vue.min.js"></script>
+<script src="public/libs/bootstrap.min.js"></script>
+<script src="public/libs/moment-with-locales.min.js"></script>
+<script src="./public/plugins/bootstrap-datetimepicker-my/js/bootstrap-datetimepicker.js"></script>
+<!--<script src="./public/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>-->
+<!--<script src="./public/plugins/My97DatePicker/WdatePicker.js"></script>-->
+<script src="public/libs/jquery.slimscroll.min.js"></script>
+<script src="public/libs/fastclick.min.js"></script>
+<script src="public/libs/app.js"></script>
+
+
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="./public/plugins/layer/layer.js"></script>
+<script src="./public/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="./public/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="./public/plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="./public/js/common.js"></script>
+<script src="public/js/case_execute.js"></script>
+
+<script type="text/javascript">
+
+//  $.fn.datetimepicker.dates['zh'] = {
+//    days: ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"],
+//    daysShort: ["日", "一", "二", "三", "四", "五", "六", "日"],
+//    daysMin: ["日", "一", "二", "三", "四", "五", "六", "日"],
+//    months: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+//    monthsShort: ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"],
+//    meridiem: ["上午", "下午"],
+//    //suffix:      ["st", "nd", "rd", "th"],
+//    today: "今天"
+//  };
+
+  $('#startDate,#endDate').datetimepicker({
+//  language: 'zh-CN',// 默认值: 'en'，设置控件上的文案为中文
+//  format:'yyyy-MM-dd HH:ii:ss', //格式化，以便精确到秒
+//  autoclose:true ,// 选择时间时，点击分后，关闭时间插件框
+////     locale: moment.locale('zh-cn'),
+////    defaultDate: moment()
+
+    todayBtn: 1,  //是否显示今天按钮，0为不显示
+    autoclose: 1, //选完时间后是否自动关闭
+    todayHighlight: true,  //高亮显示当天日期
+    startView: 4, //0从小时视图开始，选分;1	从天视图开始，选小时;2从月视图开始，选天;3从年视图开始，选月;4从十年视图开始，选年
+    minView: 0,//最精确时间，默认0；0从小时视图开始，选分；1从天视图开始，选小时；2从月视图开始，选天；3从年视图开始，选月；4从十年视图开始，选年
+    maxView:4,  //默认值：4, ‘decade’
+    //keyboardNavigation:true,  //是否可以用键盘方向键选日期，默认true
+    forceParse: 0, //强制解析,你输入的可能不正规，但是会强制尽量解析成你规定的格式（format）
+    format: 'yyyy-mm-dd hh:ii:ss',// 格式,注意ii才是分，mm或MM都是月
+    minuteStep:1, //选择分钟时的跨度，默认为5分钟
+    secondStep:1, //选择分钟时的跨度，默认为5分钟
+    //pickerPosition:"top-right",  // ‘bottom-left’，’top-right’，’top-left’’bottom-right’
+    showMeridian:0, //在日期和小时选择界面，出现上下午的选项,默认false
+    showSecond: true,
+
+  });
+
+
+function dateClick() {
+  WdatePicker({
+    //el:$dp.$('stime'),  //设置后不管是点谁触发的弹框都认为是stime绑定者弹出的，值赋给绑定者
+    dateFmt : 'yyyy-MM-dd HH:mm:ss',  //格式设置相对应界面可选择也变化
+    //skin:"default",  //whyGreen绿色风格，twoer橙色风格，默认default
+    //startDate:'%y-%M-01 00:00:00', //默认开始选中时间，格式必须和dateFmt中保持一致,例'2018-05-21 00:00:00'
+    //lang:"en",  //英文版本，默认为中文；:'en', charset:'UTF-8'；'zh-cn', charset:'gb2312'；'zh-tw', charset:'GBK'
+    minDate: '#F{$dp.$D(\'stime1\',{d:-10});}',  //其中\''\中表示默认取id为stime1的值，注意stime1中的时间格式必须要dateFmt保持一致。第二个参数为调整日期，这里是向前调10天
+    maxDate:'%y-%M-{%d+1} 23:59:59', //最大可选择时间，明天最后时刻
+    // firstDayOfWeek: 1  //一周从周几开始，默认为0，周日开始
+    highLineWeekDay:true,  //周末的日期是否高亮
+    readOnly:true,  //是否允许键盘输入值，false为禁止输入，只能鼠标选
+    //position:{left:100,top:50}},  //调整位置
+
+  });
+}
+
+</script>
+
+
+
+
+
+
+
+</body>
+</html>

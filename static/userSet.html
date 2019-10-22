@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>用户管理</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <link rel="stylesheet" href="./public/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./public/css/font-awesome.min.css">
+  <link rel="stylesheet" href="./public/plugins/bootstrap-table/bootstrap-table.min.css">
+  <link rel="stylesheet" href="./public/plugins/ztree/css/metroStyle/metroStyle.css">
+  <link rel="stylesheet" href="./public/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.css">
+  <link rel="stylesheet" href="./public/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
+  <link rel="stylesheet" href="./public/css/main.css">
+</head>
+<body>
+<div id="dtapp" v-cloak>
+
+  <div  v-show="showList">
+    <div id="toolbar">
+      <button  class="btn btn-success " type="button" @click="add">
+        <i class="fa fa-plus"></i>&nbsp;&nbsp;<span class="bold">新增</span>
+      </button>
+      <button   class="btn btn-success " type="button" @click="update">
+        <i class="fa fa-pencil-square-o"></i>&nbsp;&nbsp;<span class="bold">修改</span>
+      </button>
+      <button  class="btn btn-danger " type="button" @click="deleteRecord">
+        <i class="fa fa-remove"></i>&nbsp;&nbsp;<span class="bold">删除</span>
+      </button>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        查询条件
+      </div>
+      <div class="panel-body form-group" style="margin-bottom:0px;">
+        <div>
+          <label class="col-xs-1 control-label" style="text-align: left; margin-top:5px">系统标识：</label>
+          <div class="col-xs-2">
+            <!--<input type="text" class="form-control" name="systemFlag" id="sea_systemFlag"/>-->
+            <select id="sea_systemFlag" name="systemFlag" class="form-control"
+                    @change="systemFlagSelected">
+              <option value="">请选择</option>
+              <option v-for="item in sysFlagList" :value="item">{{item}}</option>
+            </select>
+          </div>
+          <label class="col-xs-1 control-label" style="text-align: left; margin-top:5px;margin-left: 40px;">系统环境：</label>
+          <div class="col-xs-2">
+            <!--<input type="text" class="form-control" name="systemEnv" id="sea_systemEnv"/>-->
+            <select id="sea_systemEnv" name="systemEnv" class="form-control"
+                    @change="systemEnvSelected">
+              <option value="">请选择</option>
+              <option v-for="item in sysEnvList" :value="item">{{item}}</option>
+            </select>
+          </div>
+
+          <label class="col-xs-1 control-label" style="text-align: left; margin-top:5px;margin-left: 40px;">用户ID：</label>
+          <div class="col-xs-2">
+            <select id="sea_merchId" name="merchId" class="form-control"
+                    @change="merchIdSelected">
+              <option value="">请选择</option>
+              <option v-for="item in merchIdList" :value="item">{{item}}</option>
+            </select>
+          </div>
+
+          <div class="col-xs-2" style="text-align: right; ">
+            <button class="btn btn-primary" @click="search_submit">查询</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+    <table id="mytable"  class="table table-bordered" ></table>
+  </div>
+
+  <div v-show="!showList" class="panel panel-default" >
+    <div class="panel-heading">{{title}}</div>
+    <form class="form-horizontal">
+      <div class="form-group">
+        <div class="col-sm-2 control-label"><span style="color:red;">* </span>系统标识</div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" v-model.trim="updateMerchInfoRecord.systemFlag" name="systemFlag" id="systemFlag"  placeholder="系统标识名称" maxlength="32"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-2 control-label"><span style="color:red;">* </span>系统环境</div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" v-model.trim="updateMerchInfoRecord.systemEnv" name="systemEnv" id="systemEnv" placeholder="系统环境名称" maxlength="32"/>
+        </div>
+      </div>
+
+      <div  class="form-group">
+        <div class="col-sm-2 control-label"><span style="color:red;">* </span>用  户  ID </div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" v-model.trim="updateMerchInfoRecord.merchid" name="merchId" id="merchId" placeholder="用户ID" maxlength="32"/>
+        </div>
+      </div>
+
+      <div  class="form-group">
+        <div class="col-sm-2 control-label">用户公钥</div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" v-model.trim="updateMerchInfoRecord.publicKey" name="publicKey" id="publicKey" placeholder="用户公钥" maxlength="2048"/>
+        </div>
+      </div>
+      <div  class="form-group">
+        <div class="col-sm-2 control-label"><span style="color:red;">* </span>用户私钥</div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control"  v-model.trim="updateMerchInfoRecord.privateKey" name="privateKey" id="privateKey" placeholder="用户私钥" maxlength="2048"/>
+        </div>
+      </div>
+      <div  class="form-group">
+        <div class="col-sm-2 control-label">备注信息</div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control"  v-model.trim="updateMerchInfoRecord.remark"  name="remark" id="remark"  placeholder="备注信息" maxlength="1024"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-sm-2 control-label"></div>
+        <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+        &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+      </div>
+    </form>
+  </div>
+
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="public/libs/vue.min.js"></script>
+<script src="public/libs/jquery.min.js"></script>
+<script src="public/libs/jquery.slimscroll.min.js"></script>
+
+
+<script src="public/libs/app.js"></script>
+<script src="public/libs/bootstrap.min.js"></script>
+<script src="public/libs/fastclick.min.js"></script>
+
+<script src="./public/plugins/layer/layer.js"></script>
+<script src="./public/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="./public/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="./public/js/common.js"></script>
+<script src="./public/js/user.js"></script>
+<script src="./public/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.js"></script>
+<script src="./public/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+</body>
+</html>

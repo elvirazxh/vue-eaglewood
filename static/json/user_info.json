@@ -1,0 +1,14 @@
+{
+	"code": 0,
+	"user": {
+		"userId": 1,
+		"username": "张长志",
+		"password": "1234567890",
+		"email": "530979104@qq.com",
+		"mobile": "15210639973",
+		"status": 1,
+		"roleIdList": null,
+		"createUserId": null,
+		"createTime": "2018-06-01 15:33:20"
+	}
+}

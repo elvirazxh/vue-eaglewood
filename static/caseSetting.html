@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>用例管理</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <link rel="stylesheet" href="./public/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./public/css/font-awesome.min.css">
+  <link rel="stylesheet" href="./public/plugins/bootstrap-table/bootstrap-table.min.css">
+  <link rel="stylesheet" href="./public/plugins/ztree/css/metroStyle/metroStyle.css">
+  <link rel="stylesheet" href="./public/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.css">
+  <link rel="stylesheet" href="./public/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
+  <link rel="stylesheet" href="./public/css/main.css">
+
+
+  <style type="text/css">
+    .table.table-bordered > tr >td {
+      height: 120px;
+      max-height: 120px;
+    }
+
+    td{
+      width:50%;
+      word-break:keep-all;/* 不换行 */
+      white-space:nowrap;/* 不换行 */
+      overflow:hidden;/* 内容超出宽度时隐藏超出部分的内容 */
+      text-overflow:ellipsis;/* 当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用*/
+      -o-text-overflow:ellipsis;
+      -icab-text-overflow: ellipsis;
+      -khtml-text-overflow: ellipsis;
+      -moz-text-overflow: ellipsis;
+      -webkit-text-overflow: ellipsis;
+    }
+  </style>
+
+
+</head>
+<body>
+<div id="dtapp" v-cloak>
+
+  <div  v-show="showList">
+    <!--<div>-->
+
+    <div id="toolbar">
+      <button  class="btn btn-success " type="button" @click="add">
+        <i class="fa fa-plus"></i>&nbsp;&nbsp;<span class="bold">新增</span>
+      </button>
+      <button   class="btn btn-success " type="button" @click="update">
+        <i class="fa fa-pencil-square-o"></i>&nbsp;&nbsp;<span class="bold">修改</span>
+      </button>
+      <button  class="btn btn-danger " type="button" @click="deleteRecord">
+        <i class="fa fa-remove"></i>&nbsp;&nbsp;<span class="bold">删除</span>
+      </button>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        查询条件
+      </div>
+      <div class="panel-body form-group" style="margin-bottom:0px;">
+        <div >
+          <label class="col-xs-1 control-label" style="text-align: left; margin-top:5px">系统标识：</label>
+          <div class="col-xs-2">
+            <!--<input type="text" class="form-control" name="systemFlag" id="sea_systemFlag"/>-->
+            <select id="sea_systemFlag" name="systemFlag" class="form-control"
+                    @change="systemFlagSelected">
+              <option value="">请选择</option>
+              <option v-for="item in sysFlagList" :value="item">{{item}}</option>
+            </select>
+          </div>
+          <label class="col-xs-1 control-label" style="text-align: left; margin-top:5px;margin-left: 110px;">系统环境：</label>
+          <div class="col-xs-2">
+            <!--<input type="text" class="form-control" name="systemEnv" id="sea_systemEnv"/>-->
+            <select id="sea_systemEnv" name="systemEnv" class="form-control"
+                    @change="systemEnvSelected">
+              <option value="">请选择</option>
+              <option v-for="item in sysEnvList" :value="item">{{item}}</option>
+            </select>
+          </div>
+
+
+
+          <label class="col-xs-1 control-label" style="text-align: left; margin-top:5px;margin-left: 110px;">用户ID：</label>
+          <div class="col-xs-2">
+            <select id="sea_merchId" name="merchId" class="form-control"
+                    @change="merchIdSelected">
+              <option value="">请选择</option>
+              <option v-for="item in merchIdList" :value="item">{{item}}</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div style="margin-top: 50px">
+
+          <label class="col-xs-1 control-label" style="text-align: left; margin-top:5px;">接 口  ID   ：</label>
+          <div class="col-xs-2">
+            <select id="sea_serviceId" name="serviceId" class="form-control"
+                    @change="serviceIdSelected">
+              <option value="">请选择</option>
+              <option v-for="item in serviceIdList" :value="item">{{item}}</option>
+            </select>
+          </div>
+
+          <label class="col-xs-1 control-label" style="text-align: left; margin-top:5px; margin-left: 110px;">是否可用：</label>
+          <div class="col-xs-2">
+            <select id="sea_status" name="status" class="form-control">
+              <option value="">请选择</option>
+              <option value="1">可用</option>
+              <option value="0">不可用</option>
+            </select>
+          </div>
+
+          <label class="col-xs-1 control-label" style="text-align: left; margin-top:5px; margin-left: 110px;">交易类型：</label>
+          <div class="col-xs-2">
+            <select id="sea_txnType" name="txnType" class="form-control" @change="txnTypeSelected">
+              <option value="">请选择</option>
+              <option v-for="item in txnTypeList" :value="item">{{item}}</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top: 100px">
+          <label class="col-xs-1 control-label" style="text-align: left; margin-top:5px; ">支付类型：</label>
+          <div class="col-xs-2">
+            <select id="sea_pmtType" name="pmtType" class="form-control" @change="pmtTypeSelected">
+              <option value="">请选择</option>
+              <option v-for="item in pmtTypeList" :value="item">{{item}}</option>
+            </select>
+          </div>
+        </div>
+
+
+        <div class="col-sm-2 pull-right" style="text-align: right; margin-top:15px">
+          <button class="btn btn-primary" @click="search_submit">查询</button>
+        </div>
+      </div>
+    </div>
+
+
+    <table id="mytable"  class="table table-bordered" ></table>
+  </div>
+
+
+  <div v-show="!showList" class="panel panel-default" >
+    <div class="panel-heading">{{title}}</div>
+    <form class="form-horizontal">
+      <!--<input type='hidden'  id='caseIdForUpdate' value ='caseIdForUpdate'/>{{caseIdForUpdate}}-->
+      <div class="form-group">
+        <div class="col-sm-2 control-label"><span style="color:red;">* </span>系统标识</div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" v-model.trim="updateCaseRecord.systemFlag" name="systemFlag" id="add_systemFlag"  placeholder="系统标识名称" maxlength="32"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-2 control-label"><span style="color:red;">* </span>系统环境</div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" v-model.trim="updateCaseRecord.systemEnv" name="systemEnv" id="add_systemEnv" placeholder="系统环境名称" maxlength="32"/>
+        </div>
+      </div>
+      <div  class="form-group">
+        <div class="col-sm-2 control-label"><span style="color:red;">* </span>接口名称</div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" v-model.trim="updateCaseRecord.serviceId" name="serviceId" id="add_serviceId" placeholder="serviceId" maxlength="32"/>
+        </div>
+      </div>
+
+      <div  class="form-group">
+        <div class="col-sm-2 control-label"><span style="color:red;">* </span>用  户  ID </div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" v-model.trim="updateCaseRecord.merchId" name="merchId" id="add_merchId" placeholder="用户ID" maxlength="32"/>
+        </div>
+      </div>
+
+      <div  class="form-group">
+        <div class="col-sm-2 control-label"><span style="color:red;">* </span>交易类型</div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" v-model.trim="updateCaseRecord.txnType" name="txnType" id="add_txnType" placeholder="交易类型" maxlength="4"/>
+        </div>
+      </div>
+      <div  class="form-group">
+        <div class="col-sm-2 control-label"><span style="color:red;">* </span>支付类型</div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" v-model.trim="updateCaseRecord.pmtType" name="pmtType" id="add_pmtType" placeholder="支付类型" maxlength="4"/>
+        </div>
+      </div>
+      <div  class="form-group">
+        <div class="col-sm-2 control-label">业务类型</div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" v-model.trim="updateCaseRecord.bizType" name="bizType" id="add_bizType"  placeholder="业务类型" maxlength="4"/>
+        </div>
+      </div>
+      <div  class="form-group">
+        <div class="col-sm-2 control-label"><span style="color:red;">* </span>接口请求参数</div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" v-model.trim="updateCaseRecord.reqParams" name="reqParams" id="add_reqParams"  placeholder="接口请求参数"/>
+          <code style="margin-top:4px;display: block;">接口请求参数举例：
+
+            {
+            "exAccNo":"0011562100000000033415201",
+            "amount":"90.00",
+            "password":"123456",
+            "orderId":"EA20190715024100267",
+            "encryptMode":"00",
+            "memo":"摘要信息",
+            "txnType":"01",
+            "bankAccNo":"6225880113433114",
+            "feeAmt":"0.00"
+            }
+          </code>
+        </div>
+      </div>
+
+      <div  class="form-group">
+        <div class="col-sm-2 control-label"><span style="color:red;">* </span>期望结果值</div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" v-model.trim="updateCaseRecord.expect" name="expect" id="add_expect"  placeholder="期望结果值"/>
+        </div>
+      </div>
+
+      <div  class="form-group">
+        <div class="col-sm-2 control-label"><span style="color:red;">* </span>是否可用</div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" v-model.trim="updateCaseRecord.status" name="status" id="add_status"  placeholder="是否可用" maxlength="4"/>
+        </div>
+      </div>
+
+      <div  class="form-group">
+        <div class="col-sm-2 control-label">扩展字段</div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" v-model.trim="updateCaseRecord.extend"  name="extend" id="add_sextend" placeholder="扩展字段"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-sm-2 control-label"></div>
+        <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+        &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+      </div>
+    </form>
+  </div>
+
+
+
+
+</div>
+
+
+<script src="public/libs/jquery.min.js"></script>
+<script src="public/libs/vue.min.js"></script>
+<script src="public/libs/bootstrap.min.js"></script>
+<script src="public/libs/jquery.slimscroll.min.js"></script>
+<script src="public/libs/fastclick.min.js"></script>
+<script src="public/libs/app.js"></script>
+
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="./public/plugins/layer/layer.js"></script>
+<script src="./public/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="./public/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="./public/plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="./public/js/common.js"></script>
+<script src="public/js/case.js"></script>
+<script src="./public/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.js"></script>
+<script src="./public/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
